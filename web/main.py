@@ -17,24 +17,26 @@ class Evaluator(Thread):
   def run(self):
     dir = results[self.rid]['dir']
     results[self.rid]['successful'] = False
-    try:
-      subprocess.check_output(['python','/rpg_trajectory_evaluation-0.1/scripts/analyze_trajectory_single.py',dir])
-    except subprocess.CalledProcessError as e:
-      if b'Done processing error type traj_est' not in e.output:
-        return
-      results[self.rid]['successful'] = True
-      results[self.rid]['pdf'] = list(map(
-        lambda x: os.path.relpath(x, dir),
-        glob(os.path.join(dir, '**/*.pdf'), recursive=True)
-      ))
-      results[self.rid]['archive'] = os.path.join(dir, '%d.tar.gz' % self.rid)
-      subprocess.call([
-        'tar', 'czf',
-        results[self.rid]['archive'],
-        '-C', dir, 'plots', 'saved_results'
-      ])
-    finally:
-      results[self.rid]['finished'] = True
+    popen = subprocess.Popen(
+        ['python','/rpg_trajectory_evaluation-0.1/scripts/analyze_trajectory_single.py',dir],
+        stdout=subprocess.PIPE)
+    _, _, res = os.wait4(popen.pid, 0)
+    output = popen.communicate()[0]
+    if b'Done processing error type traj_est' not in output:
+      return
+    results[self.rid]['successful'] = True
+    results[self.rid]['usage'] = res
+    results[self.rid]['pdf'] = list(map(
+      lambda x: os.path.relpath(x, dir),
+      glob(os.path.join(dir, '**/*.pdf'), recursive=True)
+    ))
+    results[self.rid]['archive'] = os.path.join(dir, '%d.tar.gz' % self.rid)
+    subprocess.call([
+      'tar', 'czf',
+      results[self.rid]['archive'],
+      '-C', dir, 'plots', 'saved_results'
+    ])
+    results[self.rid]['finished'] = True
 
 def valid(file):
   return file and file.filename != ''

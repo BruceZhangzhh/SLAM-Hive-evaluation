@@ -11,7 +11,11 @@
   {% endfor %}
   <br>
   {% if result['archive'] %}
-    <a href="/download/{{ rid }}" target="_blank">Download Archive</a>
+    <div><a href="/download/{{ rid }}" target="_blank">Download Archive</a></div>
+  {% endif %}
+  {% if result['usage'] %}
+    <div>CPU usage: {{ result['usage'].ru_utime }}</div>
+    <div>Mem usage: {{ result['usage'].ru_maxrss }} Bytes</div>
   {% endif %}
 {% endif %}
 
