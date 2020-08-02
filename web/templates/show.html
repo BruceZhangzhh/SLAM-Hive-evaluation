@@ -1,0 +1,20 @@
+<html>
+
+<body>
+
+{% if not result['successful'] %}
+  <div>Evaluation failed!</div>
+{% else %}
+  <div>Evaluation succeeded!</div><br>
+  {% for pdf in result['pdf'] %}
+    <iframe src="/{{ rid }}/{{ pdf }}"></iframe>
+  {% endfor %}
+  <br>
+  {% if result['archive'] %}
+    <a href="/download/{{ rid }}" target="_blank">Download Archive</a>
+  {% endif %}
+{% endif %}
+
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+<html>
+
+<body>
+
+{% if msg %}
+<div class="banner">{{ msg|safe }}</div>
+{% endif %}
+
+<form action="/" method="post" enctype="multipart/form-data">
+  <label for="ground">groundtruth poses with timestamps:</label>
+  <input type="file" name="ground" required /><br>
+  
+  <label for="traj">estimated poses with timestamps:</label>
+  <input type="file" name="traj" required /><br>
+
+  <label for="config">evaluation config:</label>
+  <input type="file" name="config" required /><br>
+
+  <input type="submit" />
+</form>
+
+</html>
